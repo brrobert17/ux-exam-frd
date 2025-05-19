@@ -1,0 +1,79 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Ethical Transit App</title>
+    <link rel="stylesheet" href="styles.css">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0-beta3/css/all.min.css">
+</head>
+<body>
+    <div class="container">
+        <header>
+            <h1>Ethical Transit</h1>
+        </header>
+        
+        <main>
+            <section class="route-planner">
+                <div class="form-container">
+                    <div class="form-group">
+                        <label for="start-point">From</label>
+                        <input type="text" id="start-point" placeholder="Enter starting location" aria-label="Starting location">
+                    </div>
+                    
+                    <div class="form-group">
+                        <label for="end-point">To</label>
+                        <input type="text" id="end-point" placeholder="Enter destination" aria-label="Destination">
+                    </div>
+                    
+                    <div class="form-group">
+                        <label for="date-time">Date & Time</label>
+                        <input type="datetime-local" id="date-time" aria-label="Date and time for journey">
+                    </div>
+                    
+                    <button id="search-btn" class="btn primary-btn" aria-label="Search for route">
+                        <i class="fas fa-search"></i> Find Route
+                    </button>
+                </div>
+                
+                <div class="map-toggle-container">
+                    <button id="map-toggle" class="btn secondary-btn" aria-expanded="false" aria-controls="map-container">
+                        <i class="fas fa-map-marked-alt"></i> <span>Show Map</span> <small class="eco-label"><i class="fas fa-leaf"></i> Eco-friendly</small>
+                    </button>
+                    <div class="sustainability-note">
+                        <i class="fas fa-info-circle"></i> Maps are loaded on-demand to reduce energy consumption and data usage
+                    </div>
+                </div>
+                
+                <div id="map-container" class="map-container hidden" aria-hidden="true">
+                    <iframe 
+                        title="Map of Nærum, Copenhagen"
+                        data-src="https://www.google.com/maps/embed?pb=!1m14!1m12!1m3!1d12319.92265566422!2d12.53667229321337!3d55.81594975596765!2m3!1f0!2f0!3f0!3m2!1i1024!2i768!4f13.1!5e0!3m2!1sen!2sdk!4v1747678334195!5m2!1sen!2sdk" 
+                        allowfullscreen="" 
+                        loading="lazy"
+                        aria-label="Interactive map of Nærum, Copenhagen"
+                        style="filter: invert(90%) hue-rotate(180deg);">
+                    </iframe>
+                </div>
+            </section>
+        </main>
+        
+        <nav class="mobile-nav">
+            <button class="nav-btn active" aria-label="Home">
+                <i class="fas fa-home"></i>
+                <span>Home</span>
+            </button>
+            <button class="nav-btn" aria-label="Profile">
+                <i class="fas fa-user"></i>
+                <span>Profile</span>
+            </button>
+            <button class="nav-btn" aria-label="My Tickets">
+                <i class="fas fa-ticket-alt"></i>
+                <span>My Tickets</span>
+            </button>
+        </nav>
+    </div>
+
+    <script src="script.js"></script>
+</body>
+</html>

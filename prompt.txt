@@ -1,0 +1,10 @@
+In this folder I want a simple application with vanilla js and html and css.
+Some of the functionalities we're gonna mock as the purpose of this application is to showcase 
+an ethical design.
+The application should be in dark mode, and it should follow basic accessibility principles.
+It needs to be mobile responsive and it should have a clean and modern design.
+Lets just start with the home page, where I want an dropdown iframe showing a map of naerum, copenhagen.
+Some input textfields to select a start and end point, a date-time selector and a button to search for the route.
+In the mobile view I want a navbar in the bottom with 3 buttons, home, profile and myTickets
+The buttons dont need functionality yet.
+lets run it with some simply local http server
