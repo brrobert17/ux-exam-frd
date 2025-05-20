@@ -1,4 +1,69 @@
-document.addEventListener('DOMContentLoaded', () => {
+// Hardcoded ticket data for demonstration purposes
+let purchasedTickets = [
+    {
+        id: 'ET-123456',
+        type: 'Eco-Friendly Route',
+        price: 37,
+        from: 'Nærum',
+        to: 'Copenhagen Central',
+        purchaseDate: new Date(new Date().getTime() - 3600000).toISOString(), // 1 hour ago
+        time: '35 min',
+        expirationDate: new Date(new Date().getTime() + 82800000).toISOString() // 23 hours from now
+    }
+];
+
+let travelHistory = [
+    {
+        id: 'ET-987654',
+        type: 'Fastest Route',
+        price: 42,
+        from: 'Copenhagen Central',
+        to: 'Nærum',
+        purchaseDate: new Date(new Date().getTime() - 86400000 * 2).toISOString(), // 2 days ago
+        time: '25 min'
+    },
+    {
+        id: 'ET-456789',
+        type: 'Bike-Friendly Route',
+        price: 40,
+        from: 'Nærum',
+        to: 'Lyngby',
+        purchaseDate: new Date(new Date().getTime() - 86400000 * 5).toISOString(), // 5 days ago
+        time: '32 min'
+    },
+    {
+        id: 'ET-654321',
+        type: 'Accessible Route',
+        price: 32,
+        from: 'Lyngby',
+        to: 'Nærum',
+        purchaseDate: new Date(new Date().getTime() - 86400000 * 8).toISOString(), // 8 days ago
+        time: '40 min'
+    }
+];
+
+document.addEventListener('DOMContentLoaded', function() {
+    initNavigation();
+    
+    // Initialize the home page if on index page
+    if (window.location.pathname.includes('index.html') || window.location.pathname.endsWith('/')) {
+        initHomePage();
+    }
+    
+    // Initialize tickets page if on tickets page
+    if (window.location.pathname.includes('tickets.html')) {
+        displayActiveTickets();
+        displayTravelHistory();
+    }
+    
+    // Initialize profile page if on profile page
+    if (window.location.pathname.includes('profile.html')) {
+        initProfilePage();
+    }
+});
+
+// Function to initialize the home page
+function initHomePage() {
     // Initialize date-time picker with current date and time
     const dateTimeInput = document.getElementById('date-time');
     const now = new Date();
@@ -38,40 +103,468 @@ document.addEventListener('DOMContentLoaded', () => {
             showMessage('Map loaded on demand to save energy and data', 'success');
         }
     });
+    
+    // Handle info buttons for pet and bike rules
+    const petInfoBtn = document.getElementById('pet-info');
+    const bikeInfoBtn = document.getElementById('bike-info');
+    
+    if (petInfoBtn) {
+        petInfoBtn.addEventListener('click', () => {
+            showRulesAndGuidelines('pet');
+        });
+    }
+    
+    if (bikeInfoBtn) {
+        bikeInfoBtn.addEventListener('click', () => {
+            showRulesAndGuidelines('bike');
+        });
+    }
+}
 
-    // Mobile navigation
+// Function to initialize the tickets page
+function initTicketsPage() {
+    displayActiveTickets();
+    displayTravelHistory();
+}
+
+// Function to initialize the profile page
+function initProfilePage() {
+    // Add event listeners to edit buttons
+    const editButtons = document.querySelectorAll('.edit-btn');
+    editButtons.forEach(button => {
+        button.addEventListener('click', function() {
+            const fieldValue = this.parentElement.querySelector('span');
+            const currentValue = fieldValue.textContent;
+            const fieldId = fieldValue.id;
+            
+            // Show edit modal
+            showEditFieldModal(fieldId, currentValue);
+        });
+    });
+    
+    // Add event listener to contrast toggle
+    const contrastToggle = document.getElementById('contrast-toggle');
+    if (contrastToggle) {
+        contrastToggle.addEventListener('change', function() {
+            // Show a message to indicate the setting was changed
+            const message = this.checked ? 
+                'High contrast mode enabled' : 
+                'High contrast mode disabled';
+            showMessage(message, 'success');
+        });
+    }
+    
+    // Add event listeners to text size buttons
+    const decreaseTextBtn = document.getElementById('decrease-text');
+    const increaseTextBtn = document.getElementById('increase-text');
+    
+    if (decreaseTextBtn) {
+        decreaseTextBtn.addEventListener('click', function() {
+            adjustTextSize('decrease');
+        });
+    }
+    
+    if (increaseTextBtn) {
+        increaseTextBtn.addEventListener('click', function() {
+            adjustTextSize('increase');
+        });
+    }
+    
+    // Add event listener to verify student status button
+    const verifyBtn = document.querySelector('.verify-btn');
+    if (verifyBtn) {
+        verifyBtn.addEventListener('click', function() {
+            showStudentVerificationModal();
+        });
+    }
+    
+    // Add event listener to add payment method button
+    const addCardBtn = document.querySelector('.add-card-btn');
+    if (addCardBtn) {
+        addCardBtn.addEventListener('click', function() {
+            showAddPaymentModal();
+        });
+    }
+}
+
+// Function to initialize navigation
+function initNavigation() {
     const navButtons = document.querySelectorAll('.nav-btn');
     navButtons.forEach(btn => {
         btn.addEventListener('click', () => {
-            // Remove active class from all buttons
-            navButtons.forEach(b => b.classList.remove('active'));
-            // Add active class to clicked button
-            btn.classList.add('active');
+            const targetPage = btn.getAttribute('data-page');
             
-            // In a real app, we would navigate to the corresponding page
-            // For now, just show a message about ethical design
-            if (btn.getAttribute('aria-label') !== 'Home') {
-                showEthicalMessage(btn.getAttribute('aria-label'));
+            if (targetPage) {
+                // Navigate to the target page
+                window.location.href = targetPage;
             }
         });
+    });
+    
+    // Mark the current page's navigation button as active
+    const currentPath = window.location.pathname;
+    navButtons.forEach(btn => {
+        const targetPage = btn.getAttribute('data-page');
+        if (targetPage && currentPath.includes(targetPage)) {
+            btn.classList.add('active');
+        } else {
+            btn.classList.remove('active');
+        }
     });
 
     // Accessibility enhancement: Allow pressing Enter in input fields to trigger search
     const inputFields = document.querySelectorAll('input');
     inputFields.forEach(input => {
         input.addEventListener('keypress', (e) => {
-            if (e.key === 'Enter') {
+            if (e.key === 'Enter' && window.location.pathname.includes('index.html')) {
                 searchRoute();
             }
         });
     });
-});
+};
+
+// Function to load tickets from storage - simplified for demo
+function loadTicketsFromStorage() {
+    // Using hardcoded data, no need to load from storage
+    // This function is kept for compatibility with the existing code
+    console.log('Using hardcoded ticket data for demonstration');
+}
+
+// Function to save tickets to storage - simplified for demo
+function saveTicketsToStorage() {
+    // Using hardcoded data, no need to save to storage
+    // This function is kept for compatibility with the existing code
+    console.log('In a real app, this would save tickets to storage');
+}
+
+// Function to add a new ticket - simplified for demo
+function addTicket(ticket) {
+    // For demo purposes, just show a message
+    console.log('In a real app, this would add a new ticket:', ticket);
+    
+    // Show a message to the user
+    showMessage('Ticket purchased! Check the My Tickets page to view it.', 'success');
+}
+
+// Function to add to travel history - simplified for demo
+function addToHistory(ticket) {
+    // For demo purposes, just show a message
+    console.log('In a real app, this would add to travel history:', ticket);
+}
+
+// Function to display active tickets
+function displayActiveTickets() {
+    const activeTicketsContainer = document.getElementById('active-tickets');
+    const noActiveTicketsElement = document.getElementById('no-active-tickets');
+    
+    if (!activeTicketsContainer) return;
+    
+    // Remove all existing tickets except the empty state
+    const existingTickets = activeTicketsContainer.querySelectorAll('.ticket-card');
+    existingTickets.forEach(ticket => ticket.remove());
+    
+    // Check if there are active tickets
+    if (purchasedTickets.length === 0) {
+        if (noActiveTicketsElement) {
+            noActiveTicketsElement.style.display = 'flex';
+        }
+        return;
+    }
+    
+    // Hide empty state
+    if (noActiveTicketsElement) {
+        noActiveTicketsElement.style.display = 'none';
+    }
+    
+    // Sort tickets by expiration date (soonest first)
+    const sortedTickets = [...purchasedTickets].sort((a, b) => {
+        return new Date(a.expirationDate) - new Date(b.expirationDate);
+    });
+    
+    // Add tickets to container
+    sortedTickets.forEach(ticket => {
+        const ticketElement = createTicketElement(ticket);
+        activeTicketsContainer.appendChild(ticketElement);
+    });
+}
+
+// Function to create a ticket element
+function createTicketElement(ticket) {
+    const ticketElement = document.createElement('div');
+    ticketElement.className = 'ticket-card';
+    ticketElement.setAttribute('data-ticket-id', ticket.id);
+    
+    // Format dates
+    const purchaseDate = new Date(ticket.purchaseDate).toLocaleString('en-DK', {
+        month: 'short',
+        day: 'numeric',
+        hour: '2-digit',
+        minute: '2-digit'
+    });
+    
+    const expirationDate = new Date(ticket.expirationDate).toLocaleString('en-DK', {
+        month: 'short',
+        day: 'numeric',
+        hour: '2-digit',
+        minute: '2-digit'
+    });
+    
+    // Calculate time remaining
+    const now = new Date();
+    const expiration = new Date(ticket.expirationDate);
+    const hoursRemaining = Math.max(0, Math.floor((expiration - now) / (1000 * 60 * 60)));
+    const minutesRemaining = Math.max(0, Math.floor(((expiration - now) % (1000 * 60 * 60)) / (1000 * 60)));
+    
+    // Create ticket content
+    ticketElement.innerHTML = `
+        <div class="ticket-card-header">
+            <div class="ticket-route">${ticket.from} to ${ticket.to}</div>
+            <div class="ticket-date">${purchaseDate}</div>
+        </div>
+        <div class="ticket-details">
+            <div class="ticket-detail">
+                <span class="detail-label">Ticket Type</span>
+                <span class="detail-value">${ticket.type}</span>
+            </div>
+            <div class="ticket-detail">
+                <span class="detail-label">Price</span>
+                <span class="detail-value">${ticket.price} DKK</span>
+            </div>
+            <div class="ticket-detail">
+                <span class="detail-label">Valid Until</span>
+                <span class="detail-value">${expirationDate}</span>
+            </div>
+        </div>
+        <div class="ticket-validity">
+            <div class="validity-indicator ${hoursRemaining < 2 ? 'expiring' : ''}">
+                <i class="fas ${hoursRemaining < 2 ? 'fa-exclamation-circle' : 'fa-check-circle'}"></i>
+                ${hoursRemaining > 0 || minutesRemaining > 0 ? `Valid for ${hoursRemaining}h ${minutesRemaining}m` : 'Expired'}
+            </div>
+        </div>
+        <div class="ticket-actions">
+            <button class="btn secondary-btn ticket-btn view-ticket-btn">
+                <i class="fas fa-eye"></i> View Ticket
+            </button>
+            <button class="btn primary-btn ticket-btn" disabled>
+                <i class="fas fa-qrcode"></i> Show QR Code
+            </button>
+        </div>
+    `;
+    
+    // Add event listener to view ticket button
+    const viewTicketBtn = ticketElement.querySelector('.view-ticket-btn');
+    viewTicketBtn.addEventListener('click', () => {
+        showTicketDetails(ticket);
+    });
+    
+    return ticketElement;
+}
+
+// Function to display travel history
+function displayTravelHistory() {
+    const historyContainer = document.getElementById('travel-history');
+    const noHistoryElement = document.getElementById('no-travel-history');
+    
+    if (!historyContainer) return;
+    
+    // Remove all existing history items except the empty state
+    const existingItems = historyContainer.querySelectorAll('.history-card');
+    existingItems.forEach(item => item.remove());
+    
+    // Check if there is travel history
+    if (travelHistory.length === 0) {
+        if (noHistoryElement) {
+            noHistoryElement.style.display = 'flex';
+        }
+        return;
+    }
+    
+    // Hide empty state
+    if (noHistoryElement) {
+        noHistoryElement.style.display = 'none';
+    }
+    
+    // Add history items to container
+    travelHistory.forEach(historyItem => {
+        const historyElement = createHistoryElement(historyItem);
+        historyContainer.appendChild(historyElement);
+    });
+}
+
+// Function to create a history element
+function createHistoryElement(historyItem) {
+    const historyElement = document.createElement('div');
+    historyElement.className = 'history-card';
+    
+    // Format date
+    const purchaseDate = new Date(historyItem.purchaseDate).toLocaleString('en-DK', {
+        year: 'numeric',
+        month: 'short',
+        day: 'numeric',
+        hour: '2-digit',
+        minute: '2-digit'
+    });
+    
+    // Create history content
+    historyElement.innerHTML = `
+        <div class="history-info">
+            <div class="history-route">${historyItem.from} to ${historyItem.to}</div>
+            <div class="history-date">${purchaseDate}</div>
+        </div>
+        <div class="history-price">${historyItem.price} DKK</div>
+        <button class="repurchase-btn" aria-label="Repurchase this ticket">
+            <i class="fas fa-redo-alt"></i> Repurchase
+        </button>
+    `;
+    
+    // Add event listener to repurchase button
+    const repurchaseBtn = historyElement.querySelector('.repurchase-btn');
+    repurchaseBtn.addEventListener('click', () => {
+        repurchaseTicket(historyItem);
+    });
+    
+    return historyElement;
+}
+
+// Function to repurchase a ticket from history - simplified for demo
+function repurchaseTicket(historyItem) {
+    // For demo purposes, just show a message
+    console.log('In a real app, this would repurchase the ticket:', historyItem);
+    
+    // Show confirmation message
+    showMessage('Ticket repurchased successfully!', 'success');
+    
+    // No need to refresh display since we're using hardcoded data
+}
+
+// Function to show ticket details
+function showTicketDetails(ticket) {
+    // Create a modal for the ticket details
+    const modal = document.createElement('div');
+    modal.className = 'ethical-modal';
+    modal.setAttribute('role', 'dialog');
+    modal.setAttribute('aria-labelledby', 'ticketDetailsTitle');
+    
+    const modalContent = document.createElement('div');
+    modalContent.className = 'modal-content confirmation-content';
+    
+    // Format dates
+    const purchaseDate = new Date(ticket.purchaseDate).toLocaleString('en-DK', {
+        year: 'numeric',
+        month: 'short',
+        day: 'numeric',
+        hour: '2-digit',
+        minute: '2-digit'
+    });
+    
+    const expirationDate = new Date(ticket.expirationDate).toLocaleString('en-DK', {
+        year: 'numeric',
+        month: 'short',
+        day: 'numeric',
+        hour: '2-digit',
+        minute: '2-digit'
+    });
+    
+    // Add content
+    modalContent.innerHTML = `
+        <div class="confirmation-header">
+            <h2 id="ticketDetailsTitle">Ticket Details</h2>
+        </div>
+        
+        <div class="ticket">
+            <div class="ticket-header">
+                <div class="ticket-logo">
+                    <i class="fas fa-train"></i> Ethical Transit
+                </div>
+                <div class="ticket-type">${ticket.type}</div>
+            </div>
+            
+            <div class="ticket-details">
+                <div class="ticket-info">
+                    <span class="label">Ticket #:</span>
+                    <span class="value">${ticket.id}</span>
+                </div>
+                <div class="ticket-info">
+                    <span class="label">Purchase Date:</span>
+                    <span class="value">${purchaseDate}</span>
+                </div>
+                <div class="ticket-info">
+                    <span class="label">Valid Until:</span>
+                    <span class="value">${expirationDate}</span>
+                </div>
+                <div class="ticket-info">
+                    <span class="label">Route:</span>
+                    <span class="value">${ticket.from} to ${ticket.to}</span>
+                </div>
+                <div class="ticket-info">
+                    <span class="label">Price:</span>
+                    <span class="value">${ticket.price} DKK</span>
+                </div>
+            </div>
+            
+            <div class="ticket-footer">
+                <div class="qr-code">
+                    <i class="fas fa-qrcode"></i>
+                </div>
+                <div class="ticket-note">
+                    <p>Please show this ticket to the conductor when requested.</p>
+                    <p>Valid for the selected journey only.</p>
+                </div>
+            </div>
+        </div>
+        
+        <button class="btn primary-btn" id="close-ticket-details">
+            <i class="fas fa-check"></i> Close
+        </button>
+    `;
+    
+    // Add close button
+    const closeBtn = document.createElement('button');
+    closeBtn.className = 'modal-close-btn';
+    closeBtn.innerHTML = '&times;';
+    closeBtn.setAttribute('aria-label', 'Close dialog');
+    closeBtn.addEventListener('click', () => {
+        modal.remove();
+    });
+    
+    // Handle close button
+    modalContent.querySelector('#close-ticket-details').addEventListener('click', () => {
+        modal.remove();
+    });
+    
+    // Add close button to modal content
+    modalContent.appendChild(closeBtn);
+    
+    // Add to page
+    modal.appendChild(modalContent);
+    document.body.appendChild(modal);
+    
+    // Accessibility: trap focus in modal
+    trapFocus(modal);
+    
+    // Close modal when clicking outside
+    modal.addEventListener('click', (e) => {
+        if (e.target === modal) {
+            modal.remove();
+        }
+    });
+    
+    // Close modal with Escape key
+    document.addEventListener('keydown', function escHandler(e) {
+        if (e.key === 'Escape') {
+            modal.remove();
+            document.removeEventListener('keydown', escHandler);
+        }
+    });
+}
 
 // Function to handle route search
 function searchRoute() {
     const startPoint = document.getElementById('start-point').value;
     const endPoint = document.getElementById('end-point').value;
     const dateTime = document.getElementById('date-time').value;
+    const hasPet = document.getElementById('pet-option').checked;
+    const hasBike = document.getElementById('bike-option').checked;
     
     // Validate inputs
     if (!startPoint || !endPoint || !dateTime) {
@@ -80,16 +573,32 @@ function searchRoute() {
         return;
     }
     
+    // Build message with additional options if selected
+    let routeMessage = `Finding routes from ${startPoint} to ${endPoint} at ${formatDateTime(dateTime)}`;
+    
+    if (hasPet || hasBike) {
+        routeMessage += ' with';
+        
+        if (hasPet) {
+            routeMessage += ' a pet';
+        }
+        
+        if (hasPet && hasBike) {
+            routeMessage += ' and';
+        }
+        
+        if (hasBike) {
+            routeMessage += ' a bike';
+        }
+    }
+    
     // In a real app, we would make an API call to get route information
     // For this mock, we'll just show a success message with ethical considerations
-    showMessage(
-        `Finding routes from ${startPoint} to ${endPoint} at ${formatDateTime(dateTime)}`, 
-        'success'
-    );
+    showMessage(routeMessage, 'success');
     
     // Show ethical design considerations after a short delay
     setTimeout(() => {
-        showEthicalRouteOptions();
+        showEthicalRouteOptions(hasPet, hasBike);
     }, 1500);
 }
 
@@ -145,7 +654,7 @@ function showMessage(message, type) {
 }
 
 // Function to show ethical route options
-function showEthicalRouteOptions() {
+function showEthicalRouteOptions(hasPet = false, hasBike = false) {
     // Create a modal for ethical route options
     const modal = document.createElement('div');
     modal.className = 'ethical-modal';
@@ -160,15 +669,29 @@ function showEthicalRouteOptions() {
     header.id = 'modalTitle';
     header.textContent = 'Ethical Route Options';
     
-    // Add description
+    // Add description with pet/bike info if applicable
     const description = document.createElement('p');
-    description.textContent = 'We prioritize routes based on environmental impact and accessibility needs:';
+    let descriptionText = 'We prioritize routes based on environmental impact and accessibility needs';
+    
+    if (hasPet || hasBike) {
+        descriptionText += ', with special consideration for';
+        if (hasPet && hasBike) {
+            descriptionText += ' both your pet and bicycle';
+        } else if (hasPet) {
+            descriptionText += ' your pet';
+        } else {
+            descriptionText += ' your bicycle';
+        }
+    }
+    
+    description.textContent = descriptionText + ':';
     
     // Create route options
     const routeOptions = document.createElement('div');
     routeOptions.className = 'route-options';
     
-    const options = [
+    // Base options that will be modified based on pet/bike selections
+    let options = [
         {
             icon: 'fa-leaf',
             title: 'Eco-Friendly Route',
@@ -192,7 +715,71 @@ function showEthicalRouteOptions() {
         }
     ];
     
-    options.forEach(option => {
+    // Modify options based on pet and bike selections
+    if (hasPet) {
+        // Add pet-friendly information to options
+        options[0].description += ' • Pet-friendly';
+        options[1].description += ' • Limited pet areas';
+        options[2].description += ' • Pet-friendly';
+        
+        // Add a pet-specific route option
+        options.push({
+            icon: 'fa-paw',
+            title: 'Pet-Friendly Route',
+            description: 'Includes rest areas for pets',
+            time: '38 min',
+            ethical: 'Considers animal welfare and comfort during travel'
+        });
+    }
+    
+    if (hasBike) {
+        // Add bike-friendly information to options
+        options[0].description += ' • Dedicated bike lanes';
+        options[1].description += ' • Shared traffic lanes';
+        options[2].description += ' • Bike-friendly facilities';
+        
+        // Add a bike-specific route option if not already added a pet option
+        if (!hasPet) {
+            options.push({
+                icon: 'fa-bicycle',
+                title: 'Bike-Friendly Route',
+                description: 'Continuous bike lanes and bike parking',
+                time: '32 min',
+                ethical: 'Promotes active transportation and reduces emissions'
+            });
+        } else {
+            // If both pet and bike, add a combined option
+            options.push({
+                icon: 'fa-route',
+                title: 'Pet & Bike Route',
+                description: 'Optimized for traveling with both',
+                time: '42 min',
+                ethical: 'Balanced approach for all your travel companions'
+            });
+        }
+    }
+    
+    // Add prices to each option based on type
+    options.forEach((option, index) => {
+        // Add price information to each option
+        // Base price is 32 DKK, with variations based on route type
+        let basePrice = 32;
+        
+        // Adjust price based on route type
+        if (option.title.includes('Eco-Friendly')) {
+            option.price = basePrice + 5; // Slightly more expensive for eco option
+        } else if (option.title.includes('Fastest')) {
+            option.price = basePrice + 10; // Premium for fastest route
+        } else if (option.title.includes('Accessible')) {
+            option.price = basePrice; // Standard price for accessible route
+        } else if (option.title.includes('Pet-Friendly')) {
+            option.price = basePrice + 8; // Additional cost for pet accommodations
+        } else if (option.title.includes('Bike-Friendly')) {
+            option.price = basePrice + 8; // Additional cost for bike accommodations
+        } else if (option.title.includes('Pet & Bike')) {
+            option.price = basePrice + 12; // Combined additional cost
+        }
+        
         const routeCard = document.createElement('div');
         routeCard.className = 'route-card';
         routeCard.setAttribute('tabindex', '0'); // Make focusable for keyboard navigation
@@ -201,16 +788,35 @@ function showEthicalRouteOptions() {
             <div class="route-icon"><i class="fas ${option.icon}"></i></div>
             <h3>${option.title}</h3>
             <p>${option.description}</p>
-            <div class="route-time">${option.time}</div>
+            <div class="route-details">
+                <div class="route-time"><i class="fas fa-clock"></i> ${option.time}</div>
+                <div class="route-price"><i class="fas fa-ticket-alt"></i> ${option.price} DKK</div>
+            </div>
             <div class="ethical-note">
                 <i class="fas fa-info-circle"></i>
                 <span>${option.ethical}</span>
             </div>
+            <button class="buy-ticket-btn" aria-label="Buy ticket for ${option.title}">
+                <i class="fas fa-shopping-cart"></i> Buy Ticket
+            </button>
         `;
         
-        routeCard.addEventListener('click', () => {
+        // Add click event for the entire card to select the route
+        routeCard.addEventListener('click', (e) => {
+            // Don't trigger if clicking the buy button
+            if (e.target.closest('.buy-ticket-btn')) {
+                return;
+            }
+            
             // In a real app, this would select the route
             showMessage(`You selected the ${option.title}`, 'success');
+            modal.remove();
+        });
+        
+        // Add separate click event for the buy ticket button
+        routeCard.querySelector('.buy-ticket-btn').addEventListener('click', (e) => {
+            e.stopPropagation(); // Prevent the card click event from firing
+            showTicketPurchase(option);
             modal.remove();
         });
         
@@ -239,6 +845,134 @@ function showEthicalRouteOptions() {
     modalContent.appendChild(description);
     modalContent.appendChild(routeOptions);
     modalContent.appendChild(consentNotice);
+    modal.appendChild(modalContent);
+    
+    // Add to page
+    document.body.appendChild(modal);
+    
+    // Accessibility: trap focus in modal
+    trapFocus(modal);
+    
+    // Close modal when clicking outside
+    modal.addEventListener('click', (e) => {
+        if (e.target === modal) {
+            modal.remove();
+        }
+    });
+    
+    // Close modal with Escape key
+    document.addEventListener('keydown', function escHandler(e) {
+        if (e.key === 'Escape') {
+            modal.remove();
+            document.removeEventListener('keydown', escHandler);
+        }
+    });
+}
+
+// Function to show rules and guidelines for pets and bikes
+function showRulesAndGuidelines(type) {
+    // Create a modal for the rules
+    const modal = document.createElement('div');
+    modal.className = 'ethical-modal';
+    modal.setAttribute('role', 'dialog');
+    modal.setAttribute('aria-labelledby', 'rulesTitle');
+    
+    const modalContent = document.createElement('div');
+    modalContent.className = 'modal-content rules-content';
+    
+    // Add header
+    const header = document.createElement('h2');
+    header.id = 'rulesTitle';
+    
+    // Add content based on type
+    const content = document.createElement('div');
+    content.className = 'rules-container';
+    
+    if (type === 'pet') {
+        header.textContent = 'Pet Travel Rules & Guidelines';
+        content.innerHTML = `
+            <div class="rules-section">
+                <h3><i class="fas fa-check-circle"></i> General Pet Rules</h3>
+                <ul>
+                    <li>Pets must be kept in a carrier or on a leash at all times</li>
+                    <li>You are responsible for cleaning up after your pet</li>
+                    <li>Service animals are exempt from carrier requirements</li>
+                    <li>Maximum of one pet per passenger</li>
+                </ul>
+            </div>
+            
+            <div class="rules-section">
+                <h3><i class="fas fa-clock"></i> Time Restrictions</h3>
+                <p>Pets are not allowed during peak hours:</p>
+                <ul>
+                    <li>Weekdays: 7:00-9:00 and 16:00-18:00</li>
+                    <li>No restrictions on weekends and holidays</li>
+                </ul>
+            </div>
+            
+            <div class="rules-section">
+                <h3><i class="fas fa-ticket-alt"></i> Ticket Information</h3>
+                <ul>
+                    <li>Pet ticket required: 20 DKK per journey</li>
+                    <li>Service animals travel free of charge</li>
+                    <li>Monthly pet passes available for regular travelers</li>
+                </ul>
+            </div>
+            
+            <div class="rules-section ethical-note">
+                <p><i class="fas fa-heart"></i> Our pet policy is designed to balance the needs of pet owners with the comfort of all passengers. We welcome feedback to improve our pet-friendly services.</p>
+            </div>
+        `;
+    } else if (type === 'bike') {
+        header.textContent = 'Bicycle Travel Rules & Guidelines';
+        content.innerHTML = `
+            <div class="rules-section">
+                <h3><i class="fas fa-check-circle"></i> General Bike Rules</h3>
+                <ul>
+                    <li>Bicycles must be placed in designated areas only</li>
+                    <li>Maximum of 2 bikes per train car</li>
+                    <li>Folding bikes can be brought on board at any time if folded</li>
+                    <li>Electric scooters follow the same rules as bicycles</li>
+                </ul>
+            </div>
+            
+            <div class="rules-section">
+                <h3><i class="fas fa-clock"></i> Time Restrictions</h3>
+                <p>Bicycles are not allowed during peak hours:</p>
+                <ul>
+                    <li>Weekdays: 7:00-9:00 and 15:30-17:30</li>
+                    <li>No restrictions on weekends and holidays</li>
+                </ul>
+            </div>
+            
+            <div class="rules-section">
+                <h3><i class="fas fa-ticket-alt"></i> Ticket Information</h3>
+                <ul>
+                    <li>Bike ticket required: 30 DKK per journey</li>
+                    <li>Day passes available: 60 DKK for unlimited travel</li>
+                    <li>Monthly bike passes available for regular cyclists</li>
+                </ul>
+            </div>
+            
+            <div class="rules-section ethical-note">
+                <p><i class="fas fa-leaf"></i> By accommodating bicycles on public transport, we support sustainable multi-modal transportation and reduce overall carbon emissions.</p>
+            </div>
+        `;
+    }
+    
+    // Add close button
+    const closeBtn = document.createElement('button');
+    closeBtn.className = 'modal-close-btn';
+    closeBtn.innerHTML = '&times;';
+    closeBtn.setAttribute('aria-label', 'Close dialog');
+    closeBtn.addEventListener('click', () => {
+        modal.remove();
+    });
+    
+    // Assemble modal
+    modalContent.appendChild(closeBtn);
+    modalContent.appendChild(header);
+    modalContent.appendChild(content);
     modal.appendChild(modalContent);
     
     // Add to page
@@ -319,6 +1053,281 @@ function showEthicalMessage(section) {
     modal.appendChild(modalContent);
     
     // Add to page
+    document.body.appendChild(modal);
+    
+    // Accessibility: trap focus in modal
+    trapFocus(modal);
+    
+    // Close modal when clicking outside
+    modal.addEventListener('click', (e) => {
+        if (e.target === modal) {
+            modal.remove();
+        }
+    });
+    
+    // Close modal with Escape key
+    document.addEventListener('keydown', function escHandler(e) {
+        if (e.key === 'Escape') {
+            modal.remove();
+            document.removeEventListener('keydown', escHandler);
+        }
+    });
+}
+
+// Function to show ticket purchase interface
+function showTicketPurchase(routeOption) {
+    // Create a modal for the ticket purchase
+    const modal = document.createElement('div');
+    modal.className = 'ethical-modal';
+    modal.setAttribute('role', 'dialog');
+    modal.setAttribute('aria-labelledby', 'purchaseTitle');
+    
+    const modalContent = document.createElement('div');
+    modalContent.className = 'modal-content purchase-content';
+    
+    // Add header
+    const header = document.createElement('h2');
+    header.id = 'purchaseTitle';
+    header.textContent = 'Purchase Ticket';
+    
+    // Create route summary
+    const routeSummary = document.createElement('div');
+    routeSummary.className = 'purchase-summary';
+    
+    routeSummary.innerHTML = `
+        <div class="selected-route">
+            <div class="route-icon"><i class="fas ${routeOption.icon}"></i></div>
+            <div class="route-info">
+                <h3>${routeOption.title}</h3>
+                <div class="route-details">
+                    <div class="route-time"><i class="fas fa-clock"></i> ${routeOption.time}</div>
+                    <div class="route-price"><i class="fas fa-ticket-alt"></i> ${routeOption.price} DKK</div>
+                </div>
+            </div>
+        </div>
+    `;
+    
+    // Create purchase form
+    const purchaseForm = document.createElement('form');
+    purchaseForm.className = 'purchase-form';
+    purchaseForm.setAttribute('aria-label', 'Ticket purchase form');
+    
+    // Add passenger info section
+    purchaseForm.innerHTML = `
+        <div class="form-section">
+            <h3>Passenger Information</h3>
+            <div class="form-group">
+                <label for="passenger-name">Full Name</label>
+                <input type="text" id="passenger-name" required aria-required="true" placeholder="Enter your full name">
+            </div>
+            <div class="form-group">
+                <label for="passenger-email">Email</label>
+                <input type="email" id="passenger-email" required aria-required="true" placeholder="Enter your email">
+            </div>
+        </div>
+        
+        <div class="form-section">
+            <h3>Payment Information</h3>
+            <div class="form-group">
+                <label for="card-number">Card Number</label>
+                <input type="text" id="card-number" required aria-required="true" placeholder="•••• •••• •••• ••••" maxlength="19" autocomplete="cc-number">
+            </div>
+            <div class="form-row">
+                <div class="form-group">
+                    <label for="card-expiry">Expiry Date</label>
+                    <input type="text" id="card-expiry" required aria-required="true" placeholder="MM/YY" maxlength="5" autocomplete="cc-exp">
+                </div>
+                <div class="form-group">
+                    <label for="card-cvc">CVC</label>
+                    <input type="text" id="card-cvc" required aria-required="true" placeholder="•••" maxlength="3" autocomplete="cc-csc">
+                </div>
+            </div>
+        </div>
+        
+        <div class="ethical-note purchase-note">
+            <i class="fas fa-shield-alt"></i>
+            <p>Your payment information is securely processed and never stored on our servers. We use industry-standard encryption to protect your data.</p>
+        </div>
+        
+        <div class="form-actions">
+            <button type="button" class="btn secondary-btn" id="cancel-purchase">Cancel</button>
+            <button type="submit" class="btn primary-btn" id="confirm-purchase">
+                <i class="fas fa-check-circle"></i> Confirm Purchase (${routeOption.price} DKK)
+            </button>
+        </div>
+    `;
+    
+    // Add close button
+    const closeBtn = document.createElement('button');
+    closeBtn.className = 'modal-close-btn';
+    closeBtn.innerHTML = '&times;';
+    closeBtn.setAttribute('aria-label', 'Close dialog');
+    closeBtn.addEventListener('click', () => {
+        modal.remove();
+    });
+    
+    // Handle form submission
+    purchaseForm.addEventListener('submit', (e) => {
+        e.preventDefault();
+        
+        // In a real app, this would process the payment
+        // For this demo, we'll just show a success message
+        modal.remove();
+        
+        // Show success message after a short delay to simulate processing
+        setTimeout(() => {
+            showTicketConfirmation(routeOption);
+        }, 1000);
+    });
+    
+    // Handle cancel button
+    purchaseForm.querySelector('#cancel-purchase').addEventListener('click', () => {
+        modal.remove();
+        // Go back to route options
+        showEthicalRouteOptions(document.getElementById('pet-option').checked, document.getElementById('bike-option').checked);
+    });
+    
+    // Assemble modal
+    modalContent.appendChild(closeBtn);
+    modalContent.appendChild(header);
+    modalContent.appendChild(routeSummary);
+    modalContent.appendChild(purchaseForm);
+    modal.appendChild(modalContent);
+    
+    // Add to page
+    document.body.appendChild(modal);
+    
+    // Accessibility: trap focus in modal
+    trapFocus(modal);
+    
+    // Close modal when clicking outside
+    modal.addEventListener('click', (e) => {
+        if (e.target === modal) {
+            modal.remove();
+        }
+    });
+    
+    // Close modal with Escape key
+    document.addEventListener('keydown', function escHandler(e) {
+        if (e.key === 'Escape') {
+            modal.remove();
+            document.removeEventListener('keydown', escHandler);
+        }
+    });
+}
+
+// Function to show ticket confirmation
+function showTicketConfirmation(routeOption) {
+    // Create a modal for the ticket confirmation
+    const modal = document.createElement('div');
+    modal.className = 'ethical-modal';
+    modal.setAttribute('role', 'dialog');
+    modal.setAttribute('aria-labelledby', 'confirmationTitle');
+    
+    const modalContent = document.createElement('div');
+    modalContent.className = 'modal-content confirmation-content';
+    
+    // Generate a random ticket number
+    const ticketNumber = 'ET-' + Math.floor(Math.random() * 1000000).toString().padStart(6, '0');
+    
+    // Get current date for the purchase date
+    const purchaseDate = new Date();
+    const formattedPurchaseDate = purchaseDate.toLocaleDateString('en-DK', {
+        year: 'numeric',
+        month: 'short',
+        day: 'numeric',
+        hour: '2-digit',
+        minute: '2-digit'
+    });
+    
+    // Create ticket object to save
+    const ticket = {
+        id: ticketNumber,
+        type: routeOption.title,
+        price: routeOption.price,
+        from: document.getElementById('start-point').value,
+        to: document.getElementById('end-point').value,
+        purchaseDate: purchaseDate.toISOString(),
+        time: routeOption.time
+    };
+    
+    // Save the ticket to storage
+    if (typeof addTicket === 'function') {
+        addTicket(ticket);
+    }
+    
+    // Add to history
+    if (typeof addToHistory === 'function') {
+        addToHistory(ticket);
+    }
+    
+    // Add content
+    modalContent.innerHTML = `
+        <div class="confirmation-header">
+            <i class="fas fa-check-circle confirmation-icon"></i>
+            <h2 id="confirmationTitle">Ticket Purchased!</h2>
+            <p>Your ticket has been successfully purchased and sent to your email.</p>
+        </div>
+        
+        <div class="ticket">
+            <div class="ticket-header">
+                <div class="ticket-logo">
+                    <i class="fas fa-train"></i> Ethical Transit
+                </div>
+                <div class="ticket-type">${routeOption.title}</div>
+            </div>
+            
+            <div class="ticket-details">
+                <div class="ticket-info">
+                    <span class="label">Ticket #:</span>
+                    <span class="value">${ticketNumber}</span>
+                </div>
+                <div class="ticket-info">
+                    <span class="label">Purchase Date:</span>
+                    <span class="value">${purchaseDate}</span>
+                </div>
+                <div class="ticket-info">
+                    <span class="label">Route:</span>
+                    <span class="value">${document.getElementById('start-point').value} to ${document.getElementById('end-point').value}</span>
+                </div>
+                <div class="ticket-info">
+                    <span class="label">Travel Time:</span>
+                    <span class="value">${routeOption.time}</span>
+                </div>
+                <div class="ticket-info">
+                    <span class="label">Price:</span>
+                    <span class="value">${routeOption.price} DKK</span>
+                </div>
+            </div>
+            
+            <div class="ticket-footer">
+                <div class="qr-code">
+                    <i class="fas fa-qrcode"></i>
+                </div>
+                <div class="ticket-note">
+                    <p>Please show this ticket to the conductor when requested.</p>
+                    <p>Valid for the selected journey only.</p>
+                </div>
+            </div>
+        </div>
+        
+        <div class="ethical-note confirmation-note">
+            <i class="fas fa-leaf"></i>
+            <p>By choosing digital tickets, you're helping save approximately 12g of paper per ticket. Thank you for making an eco-friendly choice!</p>
+        </div>
+        
+        <button class="btn primary-btn" id="close-confirmation">
+            <i class="fas fa-check"></i> Done
+        </button>
+    `;
+    
+    // Handle close button
+    modalContent.querySelector('#close-confirmation').addEventListener('click', () => {
+        modal.remove();
+    });
+    
+    // Add to page
+    modal.appendChild(modalContent);
     document.body.appendChild(modal);
     
     // Accessibility: trap focus in modal
@@ -557,6 +1566,120 @@ style.textContent = `
         to { opacity: 1; transform: scale(1); }
     }
     
+    /* Profile page modal styles */
+    .edit-field-form {
+        display: flex;
+        flex-direction: column;
+        gap: 15px;
+    }
+    
+    .edit-field-form label {
+        display: block;
+        margin-bottom: 5px;
+        color: var(--secondary-text);
+    }
+    
+    .edit-field-form input {
+        width: 100%;
+        padding: 12px;
+        border-radius: var(--border-radius);
+        border: 1px solid #444;
+        background-color: var(--primary-bg);
+        color: var(--primary-text);
+    }
+    
+    .edit-field-form input:focus {
+        border-color: var(--accent-color);
+        outline: none;
+    }
+    
+    .edit-field-actions {
+        display: flex;
+        justify-content: flex-end;
+        gap: 10px;
+        margin-top: 10px;
+    }
+    
+    .verification-form {
+        display: flex;
+        flex-direction: column;
+        gap: 15px;
+    }
+    
+    .verification-form-field {
+        margin-bottom: 15px;
+    }
+    
+    .verification-form-field label {
+        display: block;
+        margin-bottom: 5px;
+        color: var(--secondary-text);
+    }
+    
+    .verification-form-field input,
+    .verification-form-field select {
+        width: 100%;
+        padding: 12px;
+        border-radius: var(--border-radius);
+        border: 1px solid #444;
+        background-color: var(--primary-bg);
+        color: var(--primary-text);
+    }
+    
+    .verification-form-actions {
+        display: flex;
+        justify-content: space-between;
+        margin-top: 20px;
+    }
+    
+    .verification-note {
+        margin-top: 15px;
+        font-size: 0.85rem;
+        color: var(--secondary-text);
+    }
+    
+    .verification-note i {
+        color: var(--accent-color);
+        margin-right: 5px;
+    }
+    
+    .payment-form {
+        display: grid;
+        grid-template-columns: 1fr 1fr;
+        gap: 15px;
+    }
+    
+    .payment-form-field {
+        margin-bottom: 15px;
+    }
+    
+    .payment-form-field.full-width {
+        grid-column: span 2;
+    }
+    
+    .payment-form-field label {
+        display: block;
+        margin-bottom: 5px;
+        color: var(--secondary-text);
+    }
+    
+    .payment-form-field input {
+        width: 100%;
+        padding: 12px;
+        border-radius: var(--border-radius);
+        border: 1px solid #444;
+        background-color: var(--primary-bg);
+        color: var(--primary-text);
+    }
+    
+    .payment-form-actions {
+        grid-column: span 2;
+        display: flex;
+        justify-content: flex-end;
+        gap: 10px;
+        margin-top: 10px;
+    }
+    
     @media (max-width: 768px) {
         .route-options {
             grid-template-columns: 1fr;
@@ -566,7 +1689,334 @@ style.textContent = `
             padding: 15px;
             max-height: 80vh;
         }
+        
+        .payment-form {
+            grid-template-columns: 1fr;
+        }
+        
+        .payment-form-field.full-width {
+            grid-column: span 1;
+        }
+        
+        .payment-form-actions {
+            grid-column: span 1;
+        }
     }
 `;
 
 document.head.appendChild(style);
+
+// Function to show edit field modal
+function showEditFieldModal(fieldId, currentValue) {
+    // Create field label based on field ID
+    let fieldLabel = '';
+    switch(fieldId) {
+        case 'user-name':
+            fieldLabel = 'Name';
+            break;
+        case 'user-email':
+            fieldLabel = 'Email';
+            break;
+        case 'user-phone':
+            fieldLabel = 'Phone Number';
+            break;
+        default:
+            fieldLabel = 'Field';
+    }
+    
+    // Create modal for editing field
+    const modal = document.createElement('div');
+    modal.className = 'ethical-modal';
+    modal.setAttribute('role', 'dialog');
+    modal.setAttribute('aria-labelledby', 'edit-field-title');
+    
+    // Create modal content
+    modal.innerHTML = `
+        <div class="modal-content">
+            <button class="modal-close-btn" aria-label="Close modal">
+                <i class="fas fa-times"></i>
+            </button>
+            <h2 id="edit-field-title">Edit ${fieldLabel}</h2>
+            <form class="edit-field-form">
+                <div>
+                    <label for="edit-field-input">${fieldLabel}</label>
+                    <input type="text" id="edit-field-input" value="${currentValue}" required>
+                </div>
+                <div class="edit-field-actions">
+                    <button type="button" class="btn secondary-btn" id="cancel-edit">Cancel</button>
+                    <button type="submit" class="btn primary-btn">Save</button>
+                </div>
+            </form>
+            <div class="ethical-note">
+                <i class="fas fa-info-circle"></i>
+                Your personal information is stored locally and never shared with third parties without your explicit consent.
+            </div>
+        </div>
+    `;
+    
+    // Add modal to the document
+    document.body.appendChild(modal);
+    
+    // Trap focus in the modal
+    trapFocus(modal);
+    
+    // Focus on the input field
+    const inputField = document.getElementById('edit-field-input');
+    inputField.focus();
+    inputField.select();
+    
+    // Handle form submission
+    const form = modal.querySelector('form');
+    form.addEventListener('submit', function(e) {
+        e.preventDefault();
+        
+        // Update the field value
+        const newValue = inputField.value.trim();
+        if (newValue) {
+            document.getElementById(fieldId).textContent = newValue;
+            showMessage(`${fieldLabel} updated successfully`, 'success');
+            closeModal();
+        }
+    });
+    
+    // Handle cancel button
+    const cancelBtn = document.getElementById('cancel-edit');
+    cancelBtn.addEventListener('click', closeModal);
+    
+    // Handle close button
+    const closeBtn = modal.querySelector('.modal-close-btn');
+    closeBtn.addEventListener('click', closeModal);
+    
+    // Handle escape key
+    document.addEventListener('keydown', handleEscapeKey);
+    
+    // Function to close the modal
+    function closeModal() {
+        document.body.removeChild(modal);
+        document.removeEventListener('keydown', handleEscapeKey);
+    }
+    
+    // Function to handle escape key
+    function handleEscapeKey(e) {
+        if (e.key === 'Escape') {
+            closeModal();
+        }
+    }
+}
+
+// Function to show student verification modal
+function showStudentVerificationModal() {
+    // Create modal for student verification
+    const modal = document.createElement('div');
+    modal.className = 'ethical-modal';
+    modal.setAttribute('role', 'dialog');
+    modal.setAttribute('aria-labelledby', 'verification-title');
+    
+    // Create modal content
+    modal.innerHTML = `
+        <div class="modal-content">
+            <button class="modal-close-btn" aria-label="Close modal">
+                <i class="fas fa-times"></i>
+            </button>
+            <h2 id="verification-title"><i class="fas fa-graduation-cap"></i> Student Verification</h2>
+            <p>Please provide your student information to verify your status and receive a 20% discount on all tickets.</p>
+            
+            <form class="verification-form">
+                <div class="verification-form-field">
+                    <label for="student-id">Student ID</label>
+                    <input type="text" id="student-id" placeholder="Enter your student ID" required>
+                </div>
+                
+                <div class="verification-form-field">
+                    <label for="institution">Educational Institution</label>
+                    <select id="institution" required>
+                        <option value="" disabled selected>Select your institution</option>
+                        <option value="cph-business">Copenhagen Business Academy</option>
+                        <option value="ku">University of Copenhagen</option>
+                        <option value="dtu">Technical University of Denmark</option>
+                        <option value="cbs">Copenhagen Business School</option>
+                        <option value="other">Other</option>
+                    </select>
+                </div>
+                
+                <div class="verification-form-field">
+                    <label for="email">Student Email</label>
+                    <input type="email" id="email" placeholder="Enter your student email" required>
+                </div>
+                
+                <div class="verification-form-actions">
+                    <button type="button" class="btn secondary-btn" id="cancel-verification">Cancel</button>
+                    <button type="submit" class="btn primary-btn">Verify Status</button>
+                </div>
+            </form>
+            
+            <div class="verification-note">
+                <i class="fas fa-info-circle"></i>
+                We will send a verification link to your student email. Your discount will be applied once verification is complete.
+            </div>
+        </div>
+    `;
+    
+    // Add modal to the document
+    document.body.appendChild(modal);
+    
+    // Trap focus in the modal
+    trapFocus(modal);
+    
+    // Focus on the first input field
+    const firstInput = document.getElementById('student-id');
+    firstInput.focus();
+    
+    // Handle form submission
+    const form = modal.querySelector('form');
+    form.addEventListener('submit', function(e) {
+        e.preventDefault();
+        
+        // Show success message
+        showMessage('Verification email sent. Please check your student email to complete verification.', 'success');
+        closeModal();
+    });
+    
+    // Handle cancel button
+    const cancelBtn = document.getElementById('cancel-verification');
+    cancelBtn.addEventListener('click', closeModal);
+    
+    // Handle close button
+    const closeBtn = modal.querySelector('.modal-close-btn');
+    closeBtn.addEventListener('click', closeModal);
+    
+    // Handle escape key
+    document.addEventListener('keydown', handleEscapeKey);
+    
+    // Function to close the modal
+    function closeModal() {
+        document.body.removeChild(modal);
+        document.removeEventListener('keydown', handleEscapeKey);
+    }
+    
+    // Function to handle escape key
+    function handleEscapeKey(e) {
+        if (e.key === 'Escape') {
+            closeModal();
+        }
+    }
+}
+
+// Function to show add payment method modal
+function showAddPaymentModal() {
+    // Create modal for adding payment method
+    const modal = document.createElement('div');
+    modal.className = 'ethical-modal';
+    modal.setAttribute('role', 'dialog');
+    modal.setAttribute('aria-labelledby', 'payment-title');
+    
+    // Create modal content
+    modal.innerHTML = `
+        <div class="modal-content">
+            <button class="modal-close-btn" aria-label="Close modal">
+                <i class="fas fa-times"></i>
+            </button>
+            <h2 id="payment-title"><i class="fas fa-credit-card"></i> Add Payment Method</h2>
+            <p>Add a new payment method to your account for faster checkout.</p>
+            
+            <form class="payment-form">
+                <div class="payment-form-field full-width">
+                    <label for="card-number">Card Number</label>
+                    <input type="text" id="card-number" placeholder="1234 5678 9012 3456" required>
+                </div>
+                
+                <div class="payment-form-field">
+                    <label for="expiry-date">Expiry Date</label>
+                    <input type="text" id="expiry-date" placeholder="MM/YY" required>
+                </div>
+                
+                <div class="payment-form-field">
+                    <label for="cvv">CVV</label>
+                    <input type="text" id="cvv" placeholder="123" required>
+                </div>
+                
+                <div class="payment-form-field full-width">
+                    <label for="card-name">Name on Card</label>
+                    <input type="text" id="card-name" placeholder="John Doe" required>
+                </div>
+                
+                <div class="payment-form-actions">
+                    <button type="button" class="btn secondary-btn" id="cancel-payment">Cancel</button>
+                    <button type="submit" class="btn primary-btn">Add Card</button>
+                </div>
+            </form>
+            
+            <div class="verification-note">
+                <i class="fas fa-shield-alt"></i>
+                Your payment information is encrypted and securely stored. We never store your CVV.
+            </div>
+        </div>
+    `;
+    
+    // Add modal to the document
+    document.body.appendChild(modal);
+    
+    // Trap focus in the modal
+    trapFocus(modal);
+    
+    // Focus on the first input field
+    const firstInput = document.getElementById('card-number');
+    firstInput.focus();
+    
+    // Handle form submission
+    const form = modal.querySelector('form');
+    form.addEventListener('submit', function(e) {
+        e.preventDefault();
+        
+        // Show success message
+        showMessage('Payment method added successfully', 'success');
+        closeModal();
+    });
+    
+    // Handle cancel button
+    const cancelBtn = document.getElementById('cancel-payment');
+    cancelBtn.addEventListener('click', closeModal);
+    
+    // Handle close button
+    const closeBtn = modal.querySelector('.modal-close-btn');
+    closeBtn.addEventListener('click', closeModal);
+    
+    // Handle escape key
+    document.addEventListener('keydown', handleEscapeKey);
+    
+    // Function to close the modal
+    function closeModal() {
+        document.body.removeChild(modal);
+        document.removeEventListener('keydown', handleEscapeKey);
+    }
+    
+    // Function to handle escape key
+    function handleEscapeKey(e) {
+        if (e.key === 'Escape') {
+            closeModal();
+        }
+    }
+}
+
+// Function to adjust text size
+function adjustTextSize(action) {
+    // Get all size dots
+    const sizeDots = document.querySelectorAll('.size-dot');
+    const activeDots = document.querySelectorAll('.size-dot.active');
+    const totalDots = sizeDots.length;
+    const activeDotCount = activeDots.length;
+    
+    if (action === 'increase' && activeDotCount < totalDots) {
+        // Increase text size - activate one more dot
+        sizeDots[activeDotCount].classList.add('active');
+        showMessage('Text size increased', 'success');
+    } else if (action === 'decrease' && activeDotCount > 1) {
+        // Decrease text size - deactivate one dot
+        activeDots[activeDotCount - 1].classList.remove('active');
+        showMessage('Text size decreased', 'success');
+    } else if (action === 'increase') {
+        showMessage('Maximum text size reached', 'info');
+    } else {
+        showMessage('Minimum text size reached', 'info');
+    }
+}

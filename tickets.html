@@ -1,0 +1,70 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>My Tickets - Ethical Transit</title>
+    <link rel="stylesheet" href="styles.css">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0-beta3/css/all.min.css">
+</head>
+<body>
+    <div class="container">
+        <header>
+            <h1><i class="fas fa-train"></i> Ethical Transit</h1>
+        </header>
+        
+        <main>
+            <section class="tickets-container">
+                <div class="section-header">
+                    <h2>My Tickets</h2>
+                    <p class="section-description">Manage your active tickets and view your travel history</p>
+                </div>
+                
+                <!-- Active Tickets Section -->
+                <div class="ticket-section">
+                    <h3><i class="fas fa-ticket-alt"></i> Active Tickets</h3>
+                    <div id="active-tickets" class="tickets-list">
+                        <!-- Tickets will be loaded dynamically -->
+                        <div class="empty-state" id="no-active-tickets">
+                            <i class="fas fa-ticket-alt empty-icon"></i>
+                            <p>You don't have any active tickets</p>
+                            <a href="index.html" class="btn primary-btn">
+                                <i class="fas fa-search"></i> Find a Route
+                            </a>
+                        </div>
+                    </div>
+                </div>
+                
+                <!-- Travel History Section -->
+                <div class="ticket-section">
+                    <h3><i class="fas fa-history"></i> Travel History</h3>
+                    <div id="travel-history" class="tickets-list">
+                        <!-- History will be loaded dynamically -->
+                        <div class="empty-state" id="no-travel-history">
+                            <i class="fas fa-route empty-icon"></i>
+                            <p>Your travel history will appear here</p>
+                        </div>
+                    </div>
+                </div>
+            </section>
+        </main>
+        
+        <nav class="mobile-nav">
+            <button class="nav-btn" aria-label="Home" data-page="index.html">
+                <i class="fas fa-home"></i>
+                <span>Home</span>
+            </button>
+            <button class="nav-btn" aria-label="Profile" data-page="profile.html">
+                <i class="fas fa-user"></i>
+                <span>Profile</span>
+            </button>
+            <button class="nav-btn active" aria-label="My Tickets" data-page="tickets.html">
+                <i class="fas fa-ticket-alt"></i>
+                <span>My Tickets</span>
+            </button>
+        </nav>
+    </div>
+
+    <script src="script.js"></script>
+</body>
+</html>

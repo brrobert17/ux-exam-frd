@@ -3,14 +3,14 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Ethical Transit App</title>
+    <title>Nærumbanen</title>
     <link rel="stylesheet" href="styles.css">
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0-beta3/css/all.min.css">
 </head>
 <body>
     <div class="container">
         <header>
-            <h1>Ethical Transit</h1>
+            <h1><i class="fas fa-train"></i> Ethical Transit</h1>
         </header>
         
         <main>
@@ -29,6 +29,23 @@
                     <div class="form-group">
                         <label for="date-time">Date & Time</label>
                         <input type="datetime-local" id="date-time" aria-label="Date and time for journey">
+                    </div>
+                    
+                    <div class="form-group checkbox-group">
+                        <div class="checkbox-container">
+                            <input type="checkbox" id="pet-option" aria-label="Traveling with pet">
+                            <label for="pet-option"><i class="fas fa-paw"></i> Traveling with pet</label>
+                            <button class="info-button" id="pet-info" aria-label="Pet travel rules and guidelines" title="Click for pet travel rules">
+                                <i class="fas fa-info-circle"></i>
+                            </button>
+                        </div>
+                        <div class="checkbox-container">
+                            <input type="checkbox" id="bike-option" aria-label="Traveling with bike">
+                            <label for="bike-option"><i class="fas fa-bicycle"></i> Traveling with bike</label>
+                            <button class="info-button" id="bike-info" aria-label="Bike travel rules and guidelines" title="Click for bike travel rules">
+                                <i class="fas fa-info-circle"></i>
+                            </button>
+                        </div>
                     </div>
                     
                     <button id="search-btn" class="btn primary-btn" aria-label="Search for route">
@@ -59,15 +76,15 @@
         </main>
         
         <nav class="mobile-nav">
-            <button class="nav-btn active" aria-label="Home">
+            <button class="nav-btn active" aria-label="Home" data-page="index.html">
                 <i class="fas fa-home"></i>
                 <span>Home</span>
             </button>
-            <button class="nav-btn" aria-label="Profile">
+            <button class="nav-btn" aria-label="Profile" data-page="profile.html">
                 <i class="fas fa-user"></i>
                 <span>Profile</span>
             </button>
-            <button class="nav-btn" aria-label="My Tickets">
+            <button class="nav-btn" aria-label="My Tickets" data-page="tickets.html">
                 <i class="fas fa-ticket-alt"></i>
                 <span>My Tickets</span>
             </button>

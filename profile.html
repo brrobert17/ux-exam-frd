@@ -1,0 +1,163 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>My Profile - Ethical Transit</title>
+    <link rel="stylesheet" href="styles.css">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0-beta3/css/all.min.css">
+</head>
+<body>
+    <div class="container">
+        <header>
+            <h1><i class="fas fa-train"></i> Ethical Transit</h1>
+        </header>
+        
+        <main>
+            <section class="profile-container">
+                <div class="section-header">
+                    <h2>My Profile</h2>
+                    <p class="section-description">Manage your personal information and preferences</p>
+                </div>
+                
+                <!-- Personal Information Section -->
+                <div class="profile-section">
+                    <h3><i class="fas fa-user-circle"></i> Personal Information</h3>
+                    <div class="profile-info-container">
+                        <div class="profile-field">
+                            <div class="field-label">Name</div>
+                            <div class="field-value">
+                                <span id="user-name">Alex Jensen</span>
+                                <button class="edit-btn" aria-label="Edit name">
+                                    <i class="fas fa-pencil-alt"></i>
+                                </button>
+                            </div>
+                        </div>
+                        
+                        <div class="profile-field">
+                            <div class="field-label">Email</div>
+                            <div class="field-value">
+                                <span id="user-email">alex.jensen@example.com</span>
+                                <button class="edit-btn" aria-label="Edit email">
+                                    <i class="fas fa-pencil-alt"></i>
+                                </button>
+                            </div>
+                        </div>
+                        
+                        <div class="profile-field">
+                            <div class="field-label">Phone Number</div>
+                            <div class="field-value">
+                                <span id="user-phone">+45 12 34 56 78</span>
+                                <button class="edit-btn" aria-label="Edit phone number">
+                                    <i class="fas fa-pencil-alt"></i>
+                                </button>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+                
+                <!-- Payment Options Section -->
+                <div class="profile-section">
+                    <h3><i class="fas fa-credit-card"></i> Payment Options</h3>
+                    <div class="payment-options-container">
+                        <div class="saved-card">
+                            <div class="card-icon">
+                                <i class="fab fa-cc-visa"></i>
+                            </div>
+                            <div class="card-details">
+                                <div class="card-name">Visa ending in 4321</div>
+                                <div class="card-expiry">Expires 09/27</div>
+                            </div>
+                            <div class="card-actions">
+                                <button class="card-action-btn" aria-label="Set as default payment method">
+                                    <i class="fas fa-star"></i>
+                                </button>
+                                <button class="card-action-btn" aria-label="Remove card">
+                                    <i class="fas fa-trash-alt"></i>
+                                </button>
+                            </div>
+                        </div>
+                        
+                        <button class="btn secondary-btn add-card-btn">
+                            <i class="fas fa-plus"></i> Add Payment Method
+                        </button>
+                        
+                        <div class="student-verification">
+                            <div class="verification-info">
+                                <i class="fas fa-graduation-cap"></i>
+                                <div class="verification-text">
+                                    <h4>Student Discount</h4>
+                                    <p>Verify your student status to get 20% off on all tickets</p>
+                                </div>
+                            </div>
+                            <button class="btn primary-btn verify-btn">
+                                Verify Status
+                            </button>
+                        </div>
+                    </div>
+                </div>
+                
+                <!-- Accessibility Section -->
+                <div class="profile-section">
+                    <h3><i class="fas fa-universal-access"></i> Accessibility</h3>
+                    <div class="accessibility-options">
+                        <div class="accessibility-option">
+                            <div class="option-info">
+                                <h4>High Contrast Mode</h4>
+                                <p>Increase contrast for better visibility</p>
+                            </div>
+                            <label class="toggle-switch">
+                                <input type="checkbox" id="contrast-toggle">
+                                <span class="toggle-slider"></span>
+                            </label>
+                        </div>
+                        
+                        <div class="accessibility-option">
+                            <div class="option-info">
+                                <h4>Text Size</h4>
+                                <p>Adjust the size of text throughout the app</p>
+                            </div>
+                            <div class="text-size-controls">
+                                <button class="text-size-btn" id="decrease-text" aria-label="Decrease text size">
+                                    <i class="fas fa-minus"></i>
+                                </button>
+                                <div class="text-size-indicator">
+                                    <div class="size-dot active"></div>
+                                    <div class="size-dot active"></div>
+                                    <div class="size-dot"></div>
+                                    <div class="size-dot"></div>
+                                </div>
+                                <button class="text-size-btn" id="increase-text" aria-label="Increase text size">
+                                    <i class="fas fa-plus"></i>
+                                </button>
+                            </div>
+                        </div>
+                    </div>
+                    
+                    <div class="ethical-note accessibility-note">
+                        <i class="fas fa-info-circle"></i>
+                        <p>We believe accessibility is a right, not a privilege. These settings are saved locally on your device and never shared with third parties.</p>
+                    </div>
+                </div>
+            </section>
+        </main>
+        
+        <nav class="mobile-nav">
+            <button class="nav-btn" aria-label="Home" data-page="index.html">
+                <i class="fas fa-home"></i>
+                <span>Home</span>
+            </button>
+            <button class="nav-btn active" aria-label="Profile" data-page="profile.html">
+                <i class="fas fa-user"></i>
+                <span>Profile</span>
+            </button>
+            <button class="nav-btn" aria-label="My Tickets" data-page="tickets.html">
+                <i class="fas fa-ticket-alt"></i>
+                <span>My Tickets</span>
+            </button>
+        </nav>
+    </div>
+
+    <script src="script.js"></script>
+</body>
+</html>
