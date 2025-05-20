@@ -224,7 +224,7 @@ input:focus {
 
 .primary-btn {
     background-color: var(--accent-color);
-    color: white;
+    color: black;
     width: 100%;
 }
 
