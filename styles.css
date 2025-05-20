@@ -397,6 +397,150 @@ a:focus, button:focus, input:focus, select:focus, textarea:focus {
     .mobile-nav {
         display: flex;
     }
+    
+    .route-options {
+        grid-template-columns: 1fr;
+    }
+    
+    .modal-content {
+        padding: 15px;
+        max-height: 80vh;
+        width: 90%;
+        margin: 0 auto;
+    }
+    
+    .payment-form {
+        grid-template-columns: 1fr;
+    }
+    
+    .payment-form-field.full-width {
+        grid-column: span 1;
+    }
+    
+    .payment-form-actions {
+        grid-column: span 1;
+    }
+    
+    /* Improved mobile styles for purchase popup */
+    .purchase-summary {
+        flex-direction: column;
+    }
+    
+    .selected-route {
+        flex-direction: column;
+        align-items: center;
+        text-align: center;
+    }
+    
+    .route-icon {
+        margin-bottom: 10px;
+    }
+    
+    .route-details {
+        flex-direction: column;
+        gap: 5px;
+    }
+    
+    .info-section {
+        padding: 12px;
+    }
+    
+    .profile-field {
+        margin-bottom: 10px;
+    }
+    
+    .saved-card {
+        flex-direction: column;
+        align-items: center;
+        text-align: center;
+        padding: 15px 10px;
+    }
+    
+    .card-icon {
+        margin-right: 0;
+        margin-bottom: 10px;
+    }
+    
+    .form-actions {
+        flex-direction: column;
+        gap: 10px;
+    }
+    
+    .form-actions button {
+        width: 100%;
+    }
+    
+    #search-btn {
+        height: 45px;
+    }
+    
+    /* Improved mobile styles for ticket confirmation popup */
+    .confirmation-content {
+        padding: 12px;
+    }
+    
+    .confirmation-header {
+        text-align: center;
+    }
+    
+    .confirmation-icon {
+        font-size: 3rem;
+        margin-bottom: 10px;
+    }
+    
+    .ticket {
+        padding: 10px;
+    }
+    
+    .ticket-header {
+        flex-direction: column;
+        text-align: center;
+        gap: 10px;
+    }
+    
+    .ticket-logo {
+        margin-bottom: 5px;
+    }
+    
+    .ticket-details {
+        display: flex;
+        flex-direction: column;
+    }
+    
+    .ticket-info {
+        display: flex;
+        flex-direction: column;
+        border-bottom: 1px solid rgba(255, 255, 255, 0.1);
+        padding: 8px 0;
+    }
+    
+    .ticket-info .label {
+        font-weight: bold;
+        margin-bottom: 3px;
+    }
+    
+    .ticket-info .value {
+        font-size: 0.9rem;
+    }
+    
+    .ticket-footer {
+        flex-direction: column;
+        text-align: center;
+        gap: 15px;
+    }
+    
+    .qr-code {
+        margin: 0 auto;
+    }
+    
+    .ticket-note {
+        text-align: center;
+    }
+    
+    #close-confirmation {
+        width: 100%;
+        margin-top: 15px;
+    }
 }
 
 @media (min-width: 769px) {
@@ -940,6 +1084,153 @@ input:checked + .toggle-slider:before {
     .verify-btn {
         width: 100%;
     }
+}
+
+/* Ticket Confirmation Styles */
+.confirmation-content {
+    max-width: 500px;
+    margin: 0 auto;
+}
+
+.confirmation-header {
+    text-align: center;
+    margin-bottom: 20px;
+}
+
+.confirmation-icon {
+    color: var(--success-color);
+    font-size: 3.5rem;
+    margin-bottom: 15px;
+    display: block;
+}
+
+.ticket {
+    background-color: var(--primary-bg);
+    border-radius: var(--border-radius);
+    padding: 20px;
+    margin-bottom: 20px;
+    box-shadow: 0 4px 8px rgba(0, 0, 0, 0.2);
+}
+
+.ticket-header {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    margin-bottom: 15px;
+    padding-bottom: 15px;
+    border-bottom: 1px solid rgba(255, 255, 255, 0.1);
+}
+
+.ticket-logo {
+    font-weight: bold;
+    font-size: 1.2rem;
+    color: var(--accent-color);
+}
+
+.ticket-type {
+    background-color: var(--accent-color);
+    color: var(--primary-bg);
+    padding: 5px 10px;
+    border-radius: 4px;
+    font-weight: bold;
+    font-size: 0.9rem;
+}
+
+.ticket-details {
+    margin-bottom: 15px;
+}
+
+.ticket-info {
+    display: flex;
+    justify-content: space-between;
+    padding: 8px 0;
+    border-bottom: 1px solid rgba(255, 255, 255, 0.1);
+}
+
+.ticket-info .label {
+    font-weight: bold;
+    color: var(--secondary-text);
+}
+
+.ticket-footer {
+    display: flex;
+    align-items: center;
+    padding-top: 15px;
+    border-top: 1px solid rgba(255, 255, 255, 0.1);
+}
+
+.qr-code {
+    font-size: 4rem;
+    margin-right: 15px;
+    color: var(--accent-color);
+}
+
+.ticket-note {
+    font-size: 0.9rem;
+    color: var(--secondary-text);
+}
+
+.confirmation-note {
+    margin-bottom: 20px;
+}
+
+/* Purchase Info Display Styles */
+.purchase-info-display {
+    display: flex;
+    flex-direction: column;
+    gap: 20px;
+    margin-top: 20px;
+}
+
+.info-section {
+    background-color: var(--primary-bg);
+    border-radius: var(--border-radius);
+    padding: 15px;
+}
+
+.info-section h3 {
+    display: flex;
+    align-items: center;
+    margin-bottom: 15px;
+    font-size: 1.1rem;
+}
+
+.info-section h3 i {
+    color: var(--accent-color);
+    margin-right: 10px;
+}
+
+.purchase-summary {
+    display: flex;
+    margin-bottom: 20px;
+}
+
+.selected-route {
+    display: flex;
+    align-items: center;
+    background-color: var(--primary-bg);
+    border-radius: var(--border-radius);
+    padding: 15px;
+    width: 100%;
+}
+
+.selected-route .route-icon {
+    font-size: 2rem;
+    color: var(--accent-color);
+    margin-right: 15px;
+}
+
+.selected-route .route-info {
+    flex: 1;
+}
+
+.selected-route h3 {
+    margin-bottom: 10px;
+}
+
+.selected-route .route-details {
+    display: flex;
+    gap: 15px;
 }
 
 /* Tickets Page Styles */

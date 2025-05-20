@@ -129,62 +129,13 @@ function initTicketsPage() {
 
 // Function to initialize the profile page
 function initProfilePage() {
-    // Add event listeners to edit buttons
-    const editButtons = document.querySelectorAll('.edit-btn');
-    editButtons.forEach(button => {
-        button.addEventListener('click', function() {
-            const fieldValue = this.parentElement.querySelector('span');
-            const currentValue = fieldValue.textContent;
-            const fieldId = fieldValue.id;
-            
-            // Show edit modal
-            showEditFieldModal(fieldId, currentValue);
-        });
-    });
+    // Profile page is just for display - no functionality needed
+    console.log('Profile page loaded - display only, no functionality');
     
-    // Add event listener to contrast toggle
-    const contrastToggle = document.getElementById('contrast-toggle');
-    if (contrastToggle) {
-        contrastToggle.addEventListener('change', function() {
-            // Show a message to indicate the setting was changed
-            const message = this.checked ? 
-                'High contrast mode enabled' : 
-                'High contrast mode disabled';
-            showMessage(message, 'success');
-        });
-    }
-    
-    // Add event listeners to text size buttons
-    const decreaseTextBtn = document.getElementById('decrease-text');
-    const increaseTextBtn = document.getElementById('increase-text');
-    
-    if (decreaseTextBtn) {
-        decreaseTextBtn.addEventListener('click', function() {
-            adjustTextSize('decrease');
-        });
-    }
-    
-    if (increaseTextBtn) {
-        increaseTextBtn.addEventListener('click', function() {
-            adjustTextSize('increase');
-        });
-    }
-    
-    // Add event listener to verify student status button
-    const verifyBtn = document.querySelector('.verify-btn');
-    if (verifyBtn) {
-        verifyBtn.addEventListener('click', function() {
-            showStudentVerificationModal();
-        });
-    }
-    
-    // Add event listener to add payment method button
-    const addCardBtn = document.querySelector('.add-card-btn');
-    if (addCardBtn) {
-        addCardBtn.addEventListener('click', function() {
-            showAddPaymentModal();
-        });
-    }
+    // Add a message to inform users that this is a demo
+    setTimeout(() => {
+        showMessage('This is a demo profile page. All buttons are for display purposes only.', 'info');
+    }, 500);
 }
 
 // Function to initialize navigation
@@ -345,17 +296,12 @@ function createTicketElement(ticket) {
             <button class="btn secondary-btn ticket-btn view-ticket-btn">
                 <i class="fas fa-eye"></i> View Ticket
             </button>
-            <button class="btn primary-btn ticket-btn" disabled>
-                <i class="fas fa-qrcode"></i> Show QR Code
-            </button>
         </div>
     `;
     
-    // Add event listener to view ticket button
+    // No functionality for view ticket button in demo
     const viewTicketBtn = ticketElement.querySelector('.view-ticket-btn');
-    viewTicketBtn.addEventListener('click', () => {
-        showTicketDetails(ticket);
-    });
+    // Display-only button, no functionality
     
     return ticketElement;
 }
@@ -417,11 +363,9 @@ function createHistoryElement(historyItem) {
         </button>
     `;
     
-    // Add event listener to repurchase button
+    // No functionality for repurchase button in demo
     const repurchaseBtn = historyElement.querySelector('.repurchase-btn');
-    repurchaseBtn.addEventListener('click', () => {
-        repurchaseTicket(historyItem);
-    });
+    // Display-only button, no functionality
     
     return historyElement;
 }
@@ -782,7 +726,7 @@ function showEthicalRouteOptions(hasPet = false, hasBike = false) {
         
         const routeCard = document.createElement('div');
         routeCard.className = 'route-card';
-        routeCard.setAttribute('tabindex', '0'); // Make focusable for keyboard navigation
+        // No tabindex needed since cards are not interactive
         
         routeCard.innerHTML = `
             <div class="route-icon"><i class="fas ${option.icon}"></i></div>
@@ -801,17 +745,8 @@ function showEthicalRouteOptions(hasPet = false, hasBike = false) {
             </button>
         `;
         
-        // Add click event for the entire card to select the route
-        routeCard.addEventListener('click', (e) => {
-            // Don't trigger if clicking the buy button
-            if (e.target.closest('.buy-ticket-btn')) {
-                return;
-            }
-            
-            // In a real app, this would select the route
-            showMessage(`You selected the ${option.title}`, 'success');
-            modal.remove();
-        });
+        // Route cards are not clickable in this demo version
+        // Only the Buy Ticket button has functionality
         
         // Add separate click event for the buy ticket button
         routeCard.querySelector('.buy-ticket-btn').addEventListener('click', (e) => {
@@ -1107,39 +1042,47 @@ function showTicketPurchase(routeOption) {
         </div>
     `;
     
-    // Create purchase form
-    const purchaseForm = document.createElement('form');
-    purchaseForm.className = 'purchase-form';
-    purchaseForm.setAttribute('aria-label', 'Ticket purchase form');
+    // Create user info display (similar to profile page)
+    const userInfoDisplay = document.createElement('div');
+    userInfoDisplay.className = 'purchase-info-display';
     
-    // Add passenger info section
-    purchaseForm.innerHTML = `
-        <div class="form-section">
-            <h3>Passenger Information</h3>
-            <div class="form-group">
-                <label for="passenger-name">Full Name</label>
-                <input type="text" id="passenger-name" required aria-required="true" placeholder="Enter your full name">
-            </div>
-            <div class="form-group">
-                <label for="passenger-email">Email</label>
-                <input type="email" id="passenger-email" required aria-required="true" placeholder="Enter your email">
+    // Add user and payment info sections
+    userInfoDisplay.innerHTML = `
+        <div class="info-section">
+            <h3><i class="fas fa-user-circle"></i> Passenger Information</h3>
+            <div class="profile-info-container">
+                <div class="profile-field">
+                    <div class="field-label">Name</div>
+                    <div class="field-value">
+                        <span>Alex Jensen</span>
+                    </div>
+                </div>
+                
+                <div class="profile-field">
+                    <div class="field-label">Email</div>
+                    <div class="field-value">
+                        <span>alex.jensen@example.com</span>
+                    </div>
+                </div>
+                
+                <div class="profile-field">
+                    <div class="field-label">Phone Number</div>
+                    <div class="field-value">
+                        <span>+45 12 34 56 78</span>
+                    </div>
+                </div>
             </div>
         </div>
         
-        <div class="form-section">
-            <h3>Payment Information</h3>
-            <div class="form-group">
-                <label for="card-number">Card Number</label>
-                <input type="text" id="card-number" required aria-required="true" placeholder="•••• •••• •••• ••••" maxlength="19" autocomplete="cc-number">
-            </div>
-            <div class="form-row">
-                <div class="form-group">
-                    <label for="card-expiry">Expiry Date</label>
-                    <input type="text" id="card-expiry" required aria-required="true" placeholder="MM/YY" maxlength="5" autocomplete="cc-exp">
+        <div class="info-section">
+            <h3><i class="fas fa-credit-card"></i> Payment Method</h3>
+            <div class="saved-card">
+                <div class="card-icon">
+                    <i class="fab fa-cc-visa"></i>
                 </div>
-                <div class="form-group">
-                    <label for="card-cvc">CVC</label>
-                    <input type="text" id="card-cvc" required aria-required="true" placeholder="•••" maxlength="3" autocomplete="cc-csc">
+                <div class="card-details">
+                    <div class="card-name">Visa ending in 4321</div>
+                    <div class="card-expiry">Expires 09/27</div>
                 </div>
             </div>
         </div>
@@ -1151,7 +1094,7 @@ function showTicketPurchase(routeOption) {
         
         <div class="form-actions">
             <button type="button" class="btn secondary-btn" id="cancel-purchase">Cancel</button>
-            <button type="submit" class="btn primary-btn" id="confirm-purchase">
+            <button type="button" class="btn primary-btn" id="confirm-purchase">
                 <i class="fas fa-check-circle"></i> Confirm Purchase (${routeOption.price} DKK)
             </button>
         </div>
@@ -1166,10 +1109,9 @@ function showTicketPurchase(routeOption) {
         modal.remove();
     });
     
-    // Handle form submission
-    purchaseForm.addEventListener('submit', (e) => {
-        e.preventDefault();
-        
+    // Handle confirm purchase button
+    const confirmButton = userInfoDisplay.querySelector('#confirm-purchase');
+    confirmButton.addEventListener('click', () => {
         // In a real app, this would process the payment
         // For this demo, we'll just show a success message
         modal.remove();
@@ -1181,7 +1123,8 @@ function showTicketPurchase(routeOption) {
     });
     
     // Handle cancel button
-    purchaseForm.querySelector('#cancel-purchase').addEventListener('click', () => {
+    const cancelButton = userInfoDisplay.querySelector('#cancel-purchase');
+    cancelButton.addEventListener('click', () => {
         modal.remove();
         // Go back to route options
         showEthicalRouteOptions(document.getElementById('pet-option').checked, document.getElementById('bike-option').checked);
@@ -1191,7 +1134,7 @@ function showTicketPurchase(routeOption) {
     modalContent.appendChild(closeBtn);
     modalContent.appendChild(header);
     modalContent.appendChild(routeSummary);
-    modalContent.appendChild(purchaseForm);
+    modalContent.appendChild(userInfoDisplay);
     modal.appendChild(modalContent);
     
     // Add to page
@@ -1272,7 +1215,7 @@ function showTicketConfirmation(routeOption) {
         <div class="ticket">
             <div class="ticket-header">
                 <div class="ticket-logo">
-                    <i class="fas fa-train"></i> Ethical Transit
+                    <i class="fas fa-train"></i> Nærumbanen
                 </div>
                 <div class="ticket-type">${routeOption.title}</div>
             </div>
@@ -1284,7 +1227,7 @@ function showTicketConfirmation(routeOption) {
                 </div>
                 <div class="ticket-info">
                     <span class="label">Purchase Date:</span>
-                    <span class="value">${purchaseDate}</span>
+                    <span class="value">${formattedPurchaseDate}</span>
                 </div>
                 <div class="ticket-info">
                     <span class="label">Route:</span>
