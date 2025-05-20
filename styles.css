@@ -87,6 +87,10 @@ input {
     transition: border-color var(--transition-speed);
 }
 
+input[type="datetime-local"] {
+    color-scheme: dark;
+}
+
 input:focus {
     outline: none;
     border-color: var(--accent-color);
@@ -781,7 +785,40 @@ a:focus, button:focus, input:focus, select:focus, textarea:focus {
 
 /* Profile Page Styles */
 .profile-container {
-    padding: 10px 0;
+    max-width: 800px;
+    margin: 0 auto;
+}
+
+/* Language Dropdown Styles */
+.language-dropdown {
+    background-color: var(--secondary-bg);
+    color: var(--primary-text);
+    border: 1px solid var(--accent-color);
+    border-radius: var(--border-radius);
+    padding: 8px 12px;
+    font-size: 1rem;
+    width: 100%;
+    appearance: none;
+    -webkit-appearance: none;
+    -moz-appearance: none;
+    background-image: url('data:image/svg+xml;utf8,<svg xmlns="http://www.w3.org/2000/svg" width="12" height="6"><path d="M0 0h12L6 6z" fill="%236593d5"/></svg>');
+    background-repeat: no-repeat;
+    background-position: right 12px center;
+    background-size: 10px;
+    cursor: pointer;
+    transition: border-color var(--transition-speed);
+}
+
+.language-dropdown:focus {
+    outline: none;
+    border-color: var(--accent-color);
+    box-shadow: 0 0 0 2px rgba(101, 147, 213, 0.3);
+}
+
+.language-dropdown option {
+    background-color: var(--secondary-bg);
+    color: var(--primary-text);
+    padding: 8px;
 }
 
 .profile-section {
